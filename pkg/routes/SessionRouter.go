@@ -16,13 +16,20 @@ type SessionRouter struct {
 	config *viper.Viper
 }
 
-func NewSessionRouter(app *gin.Engine) {
+func NewSessionRouter(router *gin.RouterGroup) {
 	r := SessionRouter{
 		db:     datasource.GetDataSource(),
 		config: config.GetConfig(),
 	}
 
-	app.POST("/api/v1/sessions", r.CreateSession)
+	router.GET("/sessions", r.GetAllSessions)
+	router.POST("/sessions", r.CreateSession)
+}
+
+func (r *SessionRouter) GetAllSessions(ctx *gin.Context) {
+	sessions := make([]models.SessionModel, 0)
+	r.db.Find(&sessions)
+	ctx.JSON(http.StatusOK, sessions)
 }
 
 func (s *SessionRouter) CreateSession(ctx *gin.Context) {
@@ -34,6 +41,7 @@ func (s *SessionRouter) CreateSession(ctx *gin.Context) {
 			Code:    "INVALID_SESSION_PAYLOAD",
 		}
 		ctx.JSON(http.StatusBadRequest, e)
+		return
 	}
 	session := &models.SessionModel{
 		Session: data,

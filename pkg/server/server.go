@@ -10,7 +10,9 @@ import (
 )
 
 func routesInit(app *gin.Engine) {
-	routes.NewSessionRouter(app)
+	v1 := app.Group("/api/v1")
+	routes.NewSessionRouter(v1)
+	routes.NewActionRouter(v1)
 }
 
 //Init initializes the service and attaches all routers

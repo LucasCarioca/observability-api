@@ -1,0 +1,18 @@
+{
+	"info": {
+		"_postman_id": "33e7a7a9-ada0-4bd1-b994-d020ee69beb5",
+		"name": "observability",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Session",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		}
+	]
+}
