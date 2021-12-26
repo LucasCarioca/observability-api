@@ -23,6 +23,7 @@ func NewSessionRouter(router *gin.RouterGroup) {
 	}
 
 	router.GET("/sessions", r.GetAllSessions)
+	router.GET("/sessions/:id", r.GetSessionById)
 	router.POST("/sessions", r.CreateSession)
 }
 
@@ -47,5 +48,16 @@ func (s *SessionRouter) CreateSession(ctx *gin.Context) {
 		Session: data,
 	}
 	s.db.Save(session)
+	ctx.JSON(http.StatusOK, session)
+}
+
+func (s *SessionRouter) GetSessionById(ctx *gin.Context) {
+	id, err := readID(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	var session models.SessionModel
+	s.db.Find(&session, id)
 	ctx.JSON(http.StatusOK, session)
 }

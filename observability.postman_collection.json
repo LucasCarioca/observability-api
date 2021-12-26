@@ -1,16 +1,108 @@
 {
 	"info": {
-		"_postman_id": "33e7a7a9-ada0-4bd1-b994-d020ee69beb5",
+		"_postman_id": "4cfe7179-ba04-4fa9-a3f6-175224a372e9",
 		"name": "observability",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Create Session",
+			"name": "Create Action",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"action\": \"this happened on this session\",\n    \"session_id\": \"d12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/api/v1/actions",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"actions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Actions",
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Session",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"device_id\": \"d12345\",\n    \"app_id\": \"lucasdesouza.homebrew\",\n    \"app_version\": \"2.1.3\",\n    \"build_number\": \"5\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/api/v1/sessions",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Sessions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Session by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/api/v1/sessions/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"sessions",
+						"2"
+					]
+				}
 			},
 			"response": []
 		}
