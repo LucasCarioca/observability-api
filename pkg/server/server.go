@@ -12,7 +12,7 @@ import (
 
 func routesInit(app *gin.Engine) {
 	v1Sessions := app.Group("/api/v1/sessions")
-	v1Sessions.Use(auth.AuthCheck)
+	v1Sessions.Use(auth.CheckAPIKEy)
 	routes.NewSessionRouter(v1Sessions)
 }
 
