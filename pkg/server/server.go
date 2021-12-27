@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/LucasCarioca/oservability/pkg/auth"
 	"github.com/LucasCarioca/oservability/pkg/routes"
 
 	"github.com/gin-contrib/cors"
@@ -10,9 +11,9 @@ import (
 )
 
 func routesInit(app *gin.Engine) {
-	v1 := app.Group("/api/v1")
-	routes.NewSessionRouter(v1)
-	routes.NewActionRouter(v1)
+	v1Sessions := app.Group("/api/v1/sessions")
+	v1Sessions.Use(auth.AuthCheck)
+	routes.NewSessionRouter(v1Sessions)
 }
 
 //Init initializes the service and attaches all routers

@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"log"
 	"net/http"
 )
 
@@ -22,9 +24,11 @@ func NewSessionRouter(router *gin.RouterGroup) {
 		config: config.GetConfig(),
 	}
 
-	router.GET("/sessions", r.GetAllSessions)
-	router.GET("/sessions/:id", r.GetSessionById)
-	router.POST("/sessions", r.CreateSession)
+	router.GET("/", r.GetAllSessions)
+	router.GET("/:id", r.GetSessionById)
+	router.POST("/", r.CreateSession)
+	router.GET("/:id/actions", r.GetAllActionsForSession)
+	router.POST("/:id/actions", r.CreateAction)
 }
 
 func (r *SessionRouter) GetAllSessions(ctx *gin.Context) {
@@ -52,12 +56,61 @@ func (s *SessionRouter) CreateSession(ctx *gin.Context) {
 }
 
 func (s *SessionRouter) GetSessionById(ctx *gin.Context) {
-	id, err := readID(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+	id, idError := readID(ctx)
+	if idError != nil {
+		ctx.JSON(http.StatusBadRequest, idError)
 		return
 	}
 	var session models.SessionModel
 	s.db.Find(&session, id)
 	ctx.JSON(http.StatusOK, session)
+}
+
+func (r *SessionRouter) GetAllActionsForSession(ctx *gin.Context) {
+	id, idError := readID(ctx)
+	if idError != nil {
+		ctx.JSON(http.StatusBadRequest, idError)
+		return
+	}
+	actions := make([]models.ActionModel, 0)
+	r.db.Preload(clause.Associations).Find(&actions, "session_id = ?", id)
+	ctx.JSON(http.StatusOK, actions)
+}
+
+func (r *SessionRouter) CreateAction(ctx *gin.Context) {
+	var data models.Action
+	err := ctx.BindJSON(&data)
+	if err != nil {
+		log.Println(err.Error())
+		e := models.Error{
+			Message: "please check the data being provided and make sure nothing is missing",
+			Code:    "INVALID_ACTION_PAYLOAD",
+		}
+		ctx.JSON(http.StatusBadRequest, e)
+		return
+	}
+	id, idError := readID(ctx)
+	if idError != nil {
+		ctx.JSON(http.StatusBadRequest, idError)
+		return
+	}
+	var c int64
+	session := models.SessionModel{}
+	r.db.Find(&session, id).Count(&c)
+	if c < 1 {
+		e := models.Error{
+			Message: "actions must contain a valid session id",
+			Code:    "SESSION_NOT_FOUND",
+		}
+		ctx.JSON(http.StatusNotFound, e)
+		return
+	}
+	log.Println(">>>>", session, data)
+	action := &models.ActionModel{
+		Action:    data,
+		SessionId: uint(*id),
+		Session:   session,
+	}
+	r.db.Save(action)
+	ctx.JSON(http.StatusOK, action)
 }
