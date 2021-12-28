@@ -1,5 +1,10 @@
 package models
 
+import (
+	//"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
 //Session model for tracking activity to a given session
 type Session struct {
 	DeviceId    string `json:"device_id" binding:"required"`
@@ -12,4 +17,11 @@ type Session struct {
 type SessionModel struct {
 	Base
 	Session
+	SessionKey string `json:"session_key" binding:"required"`
+}
+
+//BeforeCreate creates a random uuid registration key for new invitations
+func (s *SessionModel) BeforeCreate(tx *gorm.DB) error {
+	s.SessionKey = "thisisaplaceholderwhileonline" //uuid.NewString()
+	return nil
 }

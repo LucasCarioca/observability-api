@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/LucasCarioca/oservability/pkg/auth"
 	"github.com/LucasCarioca/oservability/pkg/routes"
 
 	"github.com/gin-contrib/cors"
@@ -12,7 +11,6 @@ import (
 
 func routesInit(app *gin.Engine) {
 	v1Sessions := app.Group("/api/v1/sessions")
-	v1Sessions.Use(auth.CheckAPIKEy)
 	routes.NewSessionRouter(v1Sessions)
 }
 

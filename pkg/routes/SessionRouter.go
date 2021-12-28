@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/LucasCarioca/oservability/pkg/auth"
 	"github.com/LucasCarioca/oservability/pkg/config"
 	"github.com/LucasCarioca/oservability/pkg/datasource"
 	"github.com/LucasCarioca/oservability/pkg/models"
@@ -24,11 +25,11 @@ func NewSessionRouter(router *gin.RouterGroup) {
 		config: config.GetConfig(),
 	}
 
-	router.GET("/", r.GetAllSessions)
-	router.GET("/:id", r.GetSessionById)
-	router.POST("/", r.CreateSession)
-	router.GET("/:id/actions", r.GetAllActionsForSession)
-	router.POST("/:id/actions", r.CreateAction)
+	router.GET("/", auth.CheckAPIKEy, r.GetAllSessions)
+	router.GET("/:id", auth.CheckAPIKEy, r.GetSessionById)
+	router.POST("/", auth.CheckAPIKEy, r.CreateSession)
+	router.GET("/:id/actions", auth.CheckAPIKEy, r.GetAllActionsForSession)
+	router.POST("/:id/actions", auth.CheckAPIKEy, r.CreateAction)
 }
 
 func (r *SessionRouter) GetAllSessions(ctx *gin.Context) {
