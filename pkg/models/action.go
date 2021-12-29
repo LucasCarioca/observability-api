@@ -10,6 +10,6 @@ type Action struct {
 type ActionModel struct {
 	Base
 	Action
-	SessionId uint         `json:"session_id"`
+	SessionID uint         `json:"session_id"`
 	Session   SessionModel `json:"session"`
 }

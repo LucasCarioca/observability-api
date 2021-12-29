@@ -20,6 +20,7 @@ type SessionRouter struct {
 	config *viper.Viper
 }
 
+//NewSessionRouter Creates a new routers for session routes
 func NewSessionRouter(router *gin.RouterGroup) {
 	r := SessionRouter{
 		db:     datasource.GetDataSource(),
@@ -28,17 +29,19 @@ func NewSessionRouter(router *gin.RouterGroup) {
 
 	router.GET("/", auth.CheckAPIKEy, r.GetAllSessions)
 	router.POST("/", auth.CheckAPIKEy, r.CreateSession)
-	router.GET("/:sessionId", auth.CheckSessionKey, r.GetSessionById)
+	router.GET("/:sessionId", auth.CheckSessionKey, r.GetSessionByID)
 	router.GET("/:sessionId/actions", auth.CheckSessionKey, r.GetAllActionsForSession)
 	router.POST("/:sessionId/actions", auth.CheckSessionKey, r.CreateAction)
 }
 
+//GetAllSessions responds to requests with all sessions
 func (r *SessionRouter) GetAllSessions(ctx *gin.Context) {
 	sessions := make([]models.SessionModel, 0)
 	r.db.Find(&sessions)
 	ctx.JSON(http.StatusOK, sessions)
 }
 
+//CreateSession Creates a new session and returns that the requesting systemd
 func (r *SessionRouter) CreateSession(ctx *gin.Context) {
 	var data models.Session
 	err := ctx.BindJSON(&data)
@@ -57,7 +60,8 @@ func (r *SessionRouter) CreateSession(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, session)
 }
 
-func (r *SessionRouter) GetSessionById(ctx *gin.Context) {
+//GetSessionByID Retrieves a specific session by its ID
+func (r *SessionRouter) GetSessionByID(ctx *gin.Context) {
 	id, idError := common.ReadSessionID(ctx)
 	if idError != nil {
 		ctx.JSON(http.StatusBadRequest, idError)
@@ -68,6 +72,7 @@ func (r *SessionRouter) GetSessionById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, session)
 }
 
+//GetAllActionsForSession returns all sessions for a provided session
 func (r *SessionRouter) GetAllActionsForSession(ctx *gin.Context) {
 	id, idError := common.ReadSessionID(ctx)
 	if idError != nil {
@@ -79,6 +84,7 @@ func (r *SessionRouter) GetAllActionsForSession(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, actions)
 }
 
+//CreateAction creates a new action in the provided session
 func (r *SessionRouter) CreateAction(ctx *gin.Context) {
 	var data models.Action
 	err := ctx.BindJSON(&data)
@@ -110,7 +116,7 @@ func (r *SessionRouter) CreateAction(ctx *gin.Context) {
 	log.Println(">>>>", session, data)
 	action := &models.ActionModel{
 		Action:    data,
-		SessionId: uint(*id),
+		SessionID: uint(*id),
 		Session:   session,
 	}
 	r.db.Save(action)
