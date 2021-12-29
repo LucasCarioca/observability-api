@@ -39,7 +39,7 @@ func (r *SessionRouter) GetAllSessions(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sessions)
 }
 
-func (s *SessionRouter) CreateSession(ctx *gin.Context) {
+func (r *SessionRouter) CreateSession(ctx *gin.Context) {
 	var data models.Session
 	err := ctx.BindJSON(&data)
 	if err != nil {
@@ -53,18 +53,18 @@ func (s *SessionRouter) CreateSession(ctx *gin.Context) {
 	session := &models.SessionModel{
 		Session: data,
 	}
-	s.db.Save(session)
+	r.db.Save(session)
 	ctx.JSON(http.StatusOK, session)
 }
 
-func (s *SessionRouter) GetSessionById(ctx *gin.Context) {
+func (r *SessionRouter) GetSessionById(ctx *gin.Context) {
 	id, idError := common.ReadSessionID(ctx)
 	if idError != nil {
 		ctx.JSON(http.StatusBadRequest, idError)
 		return
 	}
 	var session models.SessionModel
-	s.db.Find(&session, id)
+	r.db.Find(&session, id)
 	ctx.JSON(http.StatusOK, session)
 }
 
