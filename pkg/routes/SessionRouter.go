@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/LucasCarioca/oservability/pkg/auth"
+	"github.com/LucasCarioca/oservability/pkg/common"
 	"github.com/LucasCarioca/oservability/pkg/config"
 	"github.com/LucasCarioca/oservability/pkg/datasource"
 	"github.com/LucasCarioca/oservability/pkg/models"
@@ -26,10 +27,10 @@ func NewSessionRouter(router *gin.RouterGroup) {
 	}
 
 	router.GET("/", auth.CheckAPIKEy, r.GetAllSessions)
-	router.GET("/:id", auth.CheckAPIKEy, r.GetSessionById)
 	router.POST("/", auth.CheckAPIKEy, r.CreateSession)
-	router.GET("/:id/actions", auth.CheckAPIKEy, r.GetAllActionsForSession)
-	router.POST("/:id/actions", auth.CheckAPIKEy, r.CreateAction)
+	router.GET("/:sessionId", auth.CheckSessionKey, r.GetSessionById)
+	router.GET("/:sessionId/actions", auth.CheckSessionKey, r.GetAllActionsForSession)
+	router.POST("/:sessionId/actions", auth.CheckSessionKey, r.CreateAction)
 }
 
 func (r *SessionRouter) GetAllSessions(ctx *gin.Context) {
@@ -57,7 +58,7 @@ func (s *SessionRouter) CreateSession(ctx *gin.Context) {
 }
 
 func (s *SessionRouter) GetSessionById(ctx *gin.Context) {
-	id, idError := readID(ctx)
+	id, idError := common.ReadSessionID(ctx)
 	if idError != nil {
 		ctx.JSON(http.StatusBadRequest, idError)
 		return
@@ -68,7 +69,7 @@ func (s *SessionRouter) GetSessionById(ctx *gin.Context) {
 }
 
 func (r *SessionRouter) GetAllActionsForSession(ctx *gin.Context) {
-	id, idError := readID(ctx)
+	id, idError := common.ReadSessionID(ctx)
 	if idError != nil {
 		ctx.JSON(http.StatusBadRequest, idError)
 		return
@@ -90,7 +91,7 @@ func (r *SessionRouter) CreateAction(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, e)
 		return
 	}
-	id, idError := readID(ctx)
+	id, idError := common.ReadSessionID(ctx)
 	if idError != nil {
 		ctx.JSON(http.StatusBadRequest, idError)
 		return
